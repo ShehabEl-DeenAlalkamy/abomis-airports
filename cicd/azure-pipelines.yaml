@@ -1,0 +1,32 @@
+parameters:
+  - name: apiVersion
+    type: string
+    default: googleapi
+    values:
+      # Apigee Edge
+      - apigeeapi
+      # Apigee X or Hybrid
+      - googleapi
+
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    exclude:
+      - "docs/**"
+      - ".gitignore"
+      - "README.md"
+
+resources:
+  repositories:
+    - repository: self
+      clean: true
+
+pool:
+  vmImage: ubuntu-latest
+
+extends:
+  template: templates/build-01.yaml
+  parameters:
+    apiVersion: ${{ parameters.apiVersion }}

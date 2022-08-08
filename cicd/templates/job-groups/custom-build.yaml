@@ -1,0 +1,11 @@
+parameters:
+  - name: apiVersion
+    type: string
+    values:
+      - apigeeapi
+      - googleapi
+
+jobs:
+  - template: ../jobs/apigee-mvn-plugin.yaml
+    parameters:
+      apiVersion: ${{ parameters.apiVersion }}

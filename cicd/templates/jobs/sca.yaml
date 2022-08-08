@@ -1,0 +1,59 @@
+parameters:
+  - name: jobName
+    type: string
+    default: StaticCodeAnalysis
+  - name: displayName
+    type: string
+    default: Static Code Analysis
+  - name: dependsOn
+    type: object
+    default: []
+  - name: mandatoryTasks
+    type: stepList
+    default: []
+
+jobs:
+  - job: ${{ parameters.jobName }}
+    displayName: ${{ parameters.displayName }}
+    dependsOn:
+      - ${{ each dependency in parameters.dependsOn }}:
+          - ${{ dependency }}
+    steps:
+      - ${{ parameters.mandatoryTasks }}
+
+      - checkout: self
+        path: s/$(Build.Repository.Name)
+        persistCredentials: true
+
+      - task: NodeTool@0
+        displayName: Install Node 18.0.0
+        inputs:
+          versionSpec: "18.0.0"
+
+      - task: Npm@1
+        displayName: npm install
+        inputs:
+          command: install
+
+      - bash: |
+          echo "./node_modules/apigeelint/cli.js -s ./apiproxy -f html.js -e PO025,PO013 > ${BUILD_ARTIFACTSTAGINGDIRECTORY}/sca/apigeelint-out.html"
+          mkdir -p "${BUILD_ARTIFACTSTAGINGDIRECTORY}"/sca
+          ./node_modules/apigeelint/cli.js -s ./apiproxy -f html.js -e PO025,PO013 > "${BUILD_ARTIFACTSTAGINGDIRECTORY}"/sca/apigeelint-out.html
+        displayName: "SCA: Proxy Bundle"
+
+      - bash: |
+          echo "./node_modules/bin/eslint.js --format html . > ${BUILD_ARTIFACTSTAGINGDIRECTORY}/sca/eslint-out.html"
+          ./node_modules/eslint/bin/eslint.js --format html . > "${BUILD_ARTIFACTSTAGINGDIRECTORY}"/sca/eslint-out.html
+        displayName: "SCA: JavaScript Resources"
+
+      - task: PublishBuildArtifacts@1
+        displayName: "Publish: Scan Results"
+        inputs:
+          pathToPublish: $(Build.ArtifactStagingDirectory)/sca
+          artifactName: static-code-analysis
+
+      - bash: |
+          readonly ADO_DEBUG_CMD="##[debug]"
+          echo "${ADO_DEBUG_CMD}"deleting "${BUILD_ARTIFACTSTAGINGDIRECTORY}"/sca.
+          rm -rf "${BUILD_ARTIFACTSTAGINGDIRECTORY}"/sca
+        displayName: Artifacts Cleaning
