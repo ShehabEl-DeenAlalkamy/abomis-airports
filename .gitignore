@@ -1,0 +1,15 @@
+# ignore .DS_Store
+.DS_Store
+
+# ignore node_modules
+**/node_modules/**
+
+# ignore generated target files
+**/target/**
+
+# ignore unit testing output
+.nyc_output/*
+coverage/*
+
+# ignore vscode temp generated files
+.vscode/*
