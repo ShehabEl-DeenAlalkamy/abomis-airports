@@ -1,9 +1,4 @@
 parameters:
-  - name: apiVersion
-    type: string
-    values:
-      - apigeeapi
-      - googleapi
   - name: jobName
     type: string
     default: ApigeeMvnBuild
@@ -23,8 +18,6 @@ jobs:
     dependsOn:
       - ${{ each dependency in parameters.dependsOn }}:
           - ${{ dependency }}
-    variables:
-      - template: ../vars/${{ parameters.apiVersion }}-vars.yaml
     steps:
       - ${{ parameters.mandatoryTasks }}
 
@@ -32,18 +25,10 @@ jobs:
         path: s/$(Build.Repository.Name)
         persistCredentials: true
 
-      - bash: |
-          readonly ADO_DEBUG_CMD="##[debug]"
-          echo "${ADO_DEBUG_CMD}"generating sa.json key file.
-          echo "${GCP_SA}" > sa.json
-        condition: eq('${{ parameters.apiVersion }}', 'googleapi')
-        displayName: Generate SA Key File
-        env:
-          GCP_SA: $(gcpServiceAccount)
+      - template: ../steps/export-scripts-path.yaml
 
       - task: Maven@3.205.1
-        displayName: Deploy X/Hybrid
-        condition: eq('${{ parameters.apiVersion }}', 'googleapi')
+        displayName: Proxy Bundle Package
         inputs:
           mavenPomFile: "./pom.xml"
           mavenOptions: "-Xmx3072m"
@@ -51,65 +36,25 @@ jobs:
           jdkVersionOption: "1.8"
           jdkArchitectureOption: "x64"
           publishJUnitResults: false
-          goals: install -P${{ parameters.apiVersion }} -Dorg=$(org) -Denv=$(env) -Dsa=sa.json
-
-      - task: Maven@3.205.1
-        displayName: Deploy Edge
-        condition: eq('${{ parameters.apiVersion }}', 'apigeeapi')
-        inputs:
-          mavenPomFile: "./pom.xml"
-          mavenOptions: "-Xmx3072m"
-          javaHomeOption: "JDKVersion"
-          jdkVersionOption: "1.8"
-          jdkArchitectureOption: "x64"
-          publishJUnitResults: false
-          goals: install -P${{ parameters.apiVersion }} -Dorg=$(org) -Denv=$(env) -Dusername=$(username) -Dpassword=$(EDGE_PASS)
+          goals: package -P googleapi -D deployment.description=${PROXY_DESC}
         env:
-          EDGE_PASS: $(edgePass)
+          PROXY_DESC: $(proxyDesc)
 
-      - bash: |
-          readonly ADO_DEBUG_CMD="##[debug]"
-          echo "${ADO_DEBUG_CMD}"creating "${BUILD_ARTIFACTSTAGINGDIRECTORY}"/target
-          mkdir -p "${BUILD_ARTIFACTSTAGINGDIRECTORY}"/target
-          proxy_bundle_file=$(basename $(find target -name "*.zip"))
-          echo "${ADO_DEBUG_CMD}"copying target/"${proxy_bundle_file}" to "${BUILD_ARTIFACTSTAGINGDIRECTORY}"/target/
-          cp  target/"${proxy_bundle_file}" "${BUILD_ARTIFACTSTAGINGDIRECTORY}"/target
-          echo "##vso[task.setvariable variable=Framework.Mvn.Artifacts.ProxyBundleFile]${proxy_bundle_file}"
-          if [[ -d target/test/integration || -d target/tests/integration ]]; then
-                echo "${ADO_DEBUG_CMD}"target/test/integration or target/tests/integration artifacts found
-                echo "${ADO_DEBUG_CMD}"creating "${BUILD_ARTIFACTSTAGINGDIRECTORY}"/target/integration
-                mkdir -p "${BUILD_ARTIFACTSTAGINGDIRECTORY}"/target/integration                
-                echo "${ADO_DEBUG_CMD}"copying target/test/integration or target/tests/integration to "${BUILD_ARTIFACTSTAGINGDIRECTORY}"/target/integration
-                cp -r target/test*/integration/* "${BUILD_ARTIFACTSTAGINGDIRECTORY}"/target/integration
-                echo "${ADO_DEBUG_CMD}"Framework.Mvn.Artifacts.Integration: true
-                echo "##vso[task.setvariable variable=Framework.Mvn.Artifacts.Integration;isOutput=true]true"
-                echo "${ADO_DEBUG_CMD}"Framework.Mvn.Artifacts.Integration.Name: integration-test-scripts
-                echo "##vso[task.setvariable variable=Framework.Mvn.Artifacts.Integration.Name;isOutput=true]integration-test-scripts"
-          else
-                echo "${ADO_DEBUG_CMD}"Framework.Mvn.Artifacts.Integration: false
-                echo "##vso[task.setvariable variable=Framework.Mvn.Artifacts.Integration;isOutput=true]false"
-          fi
+      - task: Bash@3
         name: ArtifactsStagingStep
         displayName: Artifacts Staging
+        inputs:
+          filePath: $(Framework.Config.PathToScripts)/mvn-artifacts-staging.sh
 
       - task: PublishBuildArtifacts@1
-        displayName: "Publish: Proxy Bundle"
+        displayName: "Publish: Proxy Bundle Artifacts"
         inputs:
-          pathToPublish: $(Build.ArtifactStagingDirectory)/target/$(Framework.Mvn.Artifacts.ProxyBundleFile)
-          artifactName: proxy-bundle
+          pathToPublish: $(Build.ArtifactStagingDirectory)/proxy-bundle-artifacts
+          artifactName: proxy-bundle-artifacts
 
-      - task: PublishBuildArtifacts@1
-        displayName: "Publish: Integration Test Scripts"
-        condition: eq(variables['ArtifactsStagingStep.Framework.Mvn.Artifacts.Integration'], 'true')
-        inputs:
-          pathToPublish: $(Build.ArtifactStagingDirectory)/target/integration
-          artifactName: $(ArtifactsStagingStep.Framework.Mvn.Artifacts.Integration.Name)
-
-      - bash: |
-          readonly ADO_DEBUG_CMD="##[debug]"
-          echo "${ADO_DEBUG_CMD}"deleting "${BUILD_ARTIFACTSTAGINGDIRECTORY}"/target.
-          rm -rf "${BUILD_ARTIFACTSTAGINGDIRECTORY}"/target
-          [[ "${API_VERSION}" == 'googleapi' ]] && echo "${ADO_DEBUG_CMD}"deleting sa.json.; rm -rf sa.json
+      - task: Bash@3
         displayName: Artifacts Cleaning
-        env:
-          API_VERSION: ${{ parameters.apiVersion }}
+        condition: always()
+        inputs:
+          filePath: $(Framework.Config.PathToScripts)/clean-artifact.sh
+          arguments: -a proxy-bundle-artifacts
