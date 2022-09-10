@@ -59,6 +59,7 @@
         <deployment.description>n/a</deployment.description>
         <apigee.config.options>update</apigee.config.options>
         <apigee.config.dir>${basedir}/target/resources/edge</apigee.config.dir>
+        <proxy.filename>abomis-airports-v1.xml</proxy.filename>
     </properties>
 
     <profiles>
