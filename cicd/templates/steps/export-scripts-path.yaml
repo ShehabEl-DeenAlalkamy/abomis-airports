@@ -1,0 +1,6 @@
+steps:
+  - bash: |
+      path_to_scripts="${BUILD_SOURCESDIRECTORY}"/cicd/templates/scripts
+      echo "##[debug]path to scripts: ${path_to_scripts}"
+      echo "##vso[task.setvariable variable=Framework.Config.PathToScripts]${path_to_scripts}"
+    displayName: Export Scripts Path
