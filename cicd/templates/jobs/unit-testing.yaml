@@ -25,26 +25,37 @@ jobs:
         path: s/$(Build.Repository.Name)
         persistCredentials: true
 
+      - template: ../steps/export-scripts-path.yaml
+
       - task: Npm@1
         displayName: npm install
         inputs:
           command: install
 
-      - bash: |
-          echo "./node_modules/nyc/bin/nyc.js --reporter=html --reporter=text ./node_modules/mocha/bin/_mocha --timeout 5000 --recursive ./test/unit"
-          mkdir -p "${BUILD_ARTIFACTSTAGINGDIRECTORY}"/utests/jsc
-          ./node_modules/nyc/bin/nyc.js --reporter=html --reporter=text ./node_modules/mocha/bin/_mocha --timeout 5000 --recursive ./test/unit
-          cp coverage/* "${BUILD_ARTIFACTSTAGINGDIRECTORY}"/utests/jsc/
+      - task: Bash@3
         displayName: "UT: JavaScript Resources"
-
-      - task: PublishBuildArtifacts@1
-        displayName: "Publish: Tests Results"
         inputs:
-          pathToPublish: $(Build.ArtifactStagingDirectory)/utests
-          artifactName: unit-testing
+          filePath: $(Framework.Config.PathToScripts)/mocha-utest.sh
 
-      - bash: |
-          readonly ADO_DEBUG_CMD="##[debug]"
-          echo "${ADO_DEBUG_CMD}"deleting "${BUILD_ARTIFACTSTAGINGDIRECTORY}"/utests.
-          rm -rf "${BUILD_ARTIFACTSTAGINGDIRECTORY}"/utests
+      - task: PublishTestResults@2
+        displayName: Consume UTests Results
+        condition: always()
+        inputs:
+          testResultsFormat: JUnit
+          testResultsFiles: "**/*.xml"
+          searchFolder: $(Build.ArtifactStagingDirectory)/utests
+          failTaskOnFailedTests: true
+
+      - task: PublishCodeCoverageResults@1
+        displayName: "Publish: Coverage Report"
+        condition: always()
+        inputs:
+          codeCoverageTool: Cobertura
+          summaryFileLocation: "$(Build.SourcesDirectory)/**/*coverage.xml"
+
+      - task: Bash@3
         displayName: Artifacts Cleaning
+        condition: always()
+        inputs:
+          filePath: $(Framework.Config.PathToScripts)/clean-artifact.sh
+          arguments: -a utests
