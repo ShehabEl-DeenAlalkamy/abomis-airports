@@ -21,7 +21,7 @@
     <groupId>com.abomis</groupId>
     <artifactId>abomis-airports</artifactId>
     <version>v1</version>
-    <name>abomis-airports${deployment.suffix}</name>
+    <name>abomis-airports${deployment.suffix}-${project.version}</name>
     <packaging>pom</packaging>
 
     <pluginRepositories>
