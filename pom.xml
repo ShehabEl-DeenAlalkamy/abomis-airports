@@ -58,7 +58,7 @@
         <apigee.env>${env}</apigee.env>
         <deployment.description>n/a</deployment.description>
         <apigee.config.options>update</apigee.config.options>
-        <apigee.config.dir>resources/edge</apigee.config.dir>
+        <apigee.config.dir>${basedir}/target/resources/edge</apigee.config.dir>
     </properties>
 
     <profiles>
