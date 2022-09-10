@@ -25,6 +25,8 @@ jobs:
         path: s/$(Build.Repository.Name)
         persistCredentials: true
 
+      - template: ../steps/export-scripts-path.yaml
+
       - task: NodeTool@0
         displayName: Install Node 18.0.0
         inputs:
@@ -35,25 +37,28 @@ jobs:
         inputs:
           command: install
 
-      - bash: |
-          echo "./node_modules/apigeelint/cli.js -s ./apiproxy -f html.js -e PO025,PO013 > ${BUILD_ARTIFACTSTAGINGDIRECTORY}/sca/apigeelint-out.html"
-          mkdir -p "${BUILD_ARTIFACTSTAGINGDIRECTORY}"/sca
-          ./node_modules/apigeelint/cli.js -s ./apiproxy -f html.js -e PO025,PO013 > "${BUILD_ARTIFACTSTAGINGDIRECTORY}"/sca/apigeelint-out.html
+      - task: Bash@3
         displayName: "SCA: Proxy Bundle"
-
-      - bash: |
-          echo "./node_modules/bin/eslint.js --format html . > ${BUILD_ARTIFACTSTAGINGDIRECTORY}/sca/eslint-out.html"
-          ./node_modules/eslint/bin/eslint.js --format html . > "${BUILD_ARTIFACTSTAGINGDIRECTORY}"/sca/eslint-out.html
-        displayName: "SCA: JavaScript Resources"
-
-      - task: PublishBuildArtifacts@1
-        displayName: "Publish: Scan Results"
         inputs:
-          pathToPublish: $(Build.ArtifactStagingDirectory)/sca
-          artifactName: static-code-analysis
+          filePath: $(Framework.Config.PathToScripts)/apigeelint-scan.sh
 
-      - bash: |
-          readonly ADO_DEBUG_CMD="##[debug]"
-          echo "${ADO_DEBUG_CMD}"deleting "${BUILD_ARTIFACTSTAGINGDIRECTORY}"/sca.
-          rm -rf "${BUILD_ARTIFACTSTAGINGDIRECTORY}"/sca
+      - task: Bash@3
+        displayName: "SCA: JavaScript Resources"
+        inputs:
+          filePath: $(Framework.Config.PathToScripts)/eslint-scan.sh
+
+      - task: PublishTestResults@2
+        displayName: Consume SCA Results
+        condition: always()
+        inputs:
+          testResultsFormat: JUnit
+          testResultsFiles: "**/*.xml"
+          searchFolder: $(Build.ArtifactStagingDirectory)/sca
+          failTaskOnFailedTests: true
+
+      - task: Bash@3
         displayName: Artifacts Cleaning
+        condition: always()
+        inputs:
+          filePath: $(Framework.Config.PathToScripts)/clean-artifact.sh
+          arguments: -a sca
