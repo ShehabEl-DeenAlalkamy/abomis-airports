@@ -1,0 +1,23 @@
+trigger:
+  branches:
+    include:
+      - "*"
+  paths:
+    exclude:
+      - "docs/**"
+      - ".gitignore"
+      - "README.md"
+
+resources:
+  repositories:
+    - repository: self
+      clean: true
+
+pool:
+  vmImage: ubuntu-latest
+
+extends:
+  template: templates/build-01.yaml
+  parameters:
+    variableGroups:
+      - abomis-airports-common
