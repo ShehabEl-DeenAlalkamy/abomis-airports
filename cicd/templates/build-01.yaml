@@ -1,11 +1,4 @@
 parameters:
-  - name: apiVersion
-    type: string
-    values:
-      # Apigee Edge
-      - apigeeapi
-      # Apigee X or Hybrid
-      - googleapi
   - name: preBuildStageName
     type: string
     default: PreBuild
@@ -18,15 +11,9 @@ parameters:
   - name: buildStageDisplayName
     type: string
     default: Build
-  - name: postBuildStageName
-    type: string
-    default: PostBuild
-  - name: postBuildStageDisplayName
-    type: string
-    default: PostBuild
-  - name: defaultBranch
-    type: string
-    default: main
+  - name: variableGroups
+    type: object
+    default: []
 
 stages:
   - stage: ${{ parameters.preBuildStageName }}
@@ -40,19 +27,8 @@ stages:
       succeeded('${{ parameters.preBuildStageName }}')
     dependsOn:
       - ${{ parameters.preBuildStageName }}
+    variables:
+      - ${{ each variableGroup in parameters.variableGroups }}:
+          - group: ${{ variableGroup }}
     jobs:
       - template: job-groups/custom-build.yaml
-        parameters:
-          apiVersion: ${{ parameters.apiVersion }}
-
-  - stage: ${{ parameters.postBuildStageName }}
-    displayName: ${{ parameters.postBuildStageDisplayName }}
-    condition: |
-      succeeded('${{ parameters.buildStageName }}')
-    dependsOn:
-      - ${{ parameters.buildStageName }}
-    jobs:
-      - template: job-groups/post-build.yaml
-        parameters:
-          apiVersion: ${{ parameters.apiVersion }}
-          buildStageName: ${{ parameters.buildStageName }}
