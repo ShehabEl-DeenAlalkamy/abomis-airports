@@ -136,19 +136,13 @@
                 <configuration>
                     <basedir>${target.root.dir}</basedir>
                     <includes>
-                        <include>test/integration/support/init.js</include>
-                        <include>apiproxy/abomis-airports-v1.xml</include>
+                        <include>apiproxy/${proxy.filename}</include>
                         <include>apiproxy/proxies/default.xml</include>
                     </includes>
                     <replacements>
                         <replacement>
-                            <token>org-env.apigee.net</token>
-                            <value>${apigee.org}-${apigee.env}.apigee.net</value>
-                        </replacement>
-
-                        <replacement>
-                            <token>/abomis-airports/v1</token>
-                            <value>/abomis-airports${deployment.suffix}/v1</value>
+                            <token>/${project.artifactId}/${project.version}</token>
+                            <value>/${project.artifactId}${deployment.suffix}/${project.version}</value>
                         </replacement>
 
                         <replacement>
