@@ -63,19 +63,6 @@
 
     <profiles>
         <profile>
-            <!-- Apigee Edge -->
-            <id>apigeeapi</id>
-            <properties>
-                <apigee.plugin.version>1.3.3</apigee.plugin.version>
-                <apigee.config-plugin.version>1.5.3</apigee.config-plugin.version>
-                <apigee.hosturl>https://api.enterprise.apigee.com</apigee.hosturl>
-                <apigee.authtype>oauth</apigee.authtype>
-                <apigee.username>${username}</apigee.username>
-                <apigee.password>${password}</apigee.password>
-            </properties>
-        </profile>
-
-        <profile>
             <!-- Apigee X and hybrid -->
             <id>googleapi</id>
             <properties>
