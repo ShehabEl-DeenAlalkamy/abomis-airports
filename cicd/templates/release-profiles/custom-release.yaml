@@ -1,0 +1,23 @@
+parameters:
+  - name: deploymentProfile
+    type: string
+  - name: artifactAlias
+    type: string
+  - name: artifactName
+    type: string    
+  - name: releaseList
+    type: object
+    default: []
+
+stages:
+  - ${{ each release in parameters.releaseList }}:
+      - stage: ${{ release.stageName }}
+        displayName: ${{ release.displayName }}
+        variables:
+          - group: ${{ release.variableGroup }}
+        jobs:
+          - template: ../deployment-profiles/${{ parameters.deploymentProfile }}.yaml
+            parameters:
+              artifactAlias: ${{ parameters.artifactAlias }}
+              artifactName: ${{ parameters.artifactName }}
+              environment: ${{ release.environment }}
