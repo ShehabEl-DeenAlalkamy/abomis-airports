@@ -5,6 +5,10 @@ parameters:
   - name: displayName
     type: string
     default: Functional Testing
+  - name: artifactAlias
+    type: string
+  - name: artifactName
+    type: string
   - name: dependsOn
     type: object
     default: []
@@ -20,7 +24,11 @@ jobs:
           - ${{ dependency }}
     steps:
       - checkout: none
-      
+
+      - download: ${{ parameters.artifactAlias }}
+        artifact: ${{ parameters.artifactName }}
+        displayName: Download ${{ parameters.artifactName }}
+
       - ${{ parameters.mandatoryTasks }}
 
       - script: |
