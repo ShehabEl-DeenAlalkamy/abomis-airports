@@ -1,0 +1,28 @@
+parameters:
+  - name: releaseProfile
+    type: string
+  - name: deploymentProfile
+    type: string
+  - name: artifactAlias
+    type: string
+  - name: artifactName
+    type: string   
+  - name: releaseList
+    type: object
+    default: []
+  - name: commonVariableGroups
+    type: object
+    default: []
+
+variables:
+  - ${{ each variableGroup in parameters.commonVariableGroups }}:
+      - group: ${{ variableGroup }}
+
+stages:
+  - template: release-profiles/${{ parameters.releaseProfile }}.yaml
+    parameters:
+      deploymentProfile: ${{ parameters.deploymentProfile }}
+      artifactAlias: ${{ parameters.artifactAlias }}
+      artifactName: ${{ parameters.artifactName }}
+      ${{ if eq(parameters.releaseProfile, 'custom-release') }}:
+        releaseList: ${{ parameters.releaseList }}
