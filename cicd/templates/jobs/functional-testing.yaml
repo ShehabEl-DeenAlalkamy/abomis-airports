@@ -1,0 +1,38 @@
+parameters:
+  - name: jobName
+    type: string
+    default: FuncTesting
+  - name: displayName
+    type: string
+    default: Functional Testing
+  - name: dependsOn
+    type: object
+    default: []
+  - name: mandatoryTasks
+    type: stepList
+    default: []
+
+jobs:
+  - job: ${{ parameters.jobName }}
+    displayName: ${{ parameters.displayName }}
+    dependsOn:
+      - ${{ each dependency in parameters.dependsOn }}:
+          - ${{ dependency }}
+    steps:
+      - checkout: none
+      
+      - ${{ parameters.mandatoryTasks }}
+
+      - script: |
+          echo org      : "${ORG}"
+          echo env      : "${ENV}"
+          echo hostname : "${HOSTNAME}"
+        displayName: Show Vars
+
+      - script: |
+          echo ls
+          ls
+          echo pwd: $(pwd)
+          echo ls Pipeline Workspace
+          ls "${PIPELINE_WORKSPACE}"
+        displayName: Scout Agent Vision
