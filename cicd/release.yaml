@@ -1,0 +1,39 @@
+trigger:
+  branches:
+    include:
+      - feat/decoupled-ci-cd
+  paths:
+    exclude:
+      - "docs/**"
+      - ".gitignore"
+      - "README.md"
+
+resources:
+  repositories:
+    - repository: self
+      clean: true
+  pipelines:
+    - pipeline: abomis-airports-ci
+      source: abomis-airports-ci
+
+pool:
+  vmImage: ubuntu-latest
+
+extends:
+  template: templates/release-01.yaml
+  parameters:
+    releaseProfile: custom-release
+    deploymentProfile: mvn-plugins
+    artifactAlias: abomis-airports-ci
+    artifactName: proxy-bundle-artifacts
+    commonVariableGroups:
+      - abomis-airports-common
+    releaseList:
+      - stageName: Test
+        displayName: Test
+        variableGroup: abomis-airports-tst-env
+        environment: abomis-tst
+      - stageName: Prod
+        displayName: Prod
+        variableGroup: abomis-airports-prd-env
+        environment: abomis-prd
