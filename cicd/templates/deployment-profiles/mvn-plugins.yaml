@@ -49,5 +49,7 @@ jobs:
 
   - template: ../jobs/functional-testing.yaml
     parameters:
+      artifactAlias: ${{ parameters.artifactAlias }}
+      artifactName: ${{ parameters.artifactName }}    
       dependsOn:
         - Deploy
