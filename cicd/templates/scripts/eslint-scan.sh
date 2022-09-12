@@ -2,8 +2,9 @@
 
 main() {
     mkdir -p "${BUILD_ARTIFACTSTAGINGDIRECTORY}"/sca
-    echo "./node_modules/bin/eslint.js --format junit . > ${BUILD_ARTIFACTSTAGINGDIRECTORY}/sca/eslint-out.xml"
-    ./node_modules/eslint/bin/eslint.js --format junit . >"${BUILD_ARTIFACTSTAGINGDIRECTORY}"/sca/eslint-out.xml
+    cmd="./node_modules/bin/eslint.js --format junit . > ${BUILD_ARTIFACTSTAGINGDIRECTORY}/sca/eslint-out.xml"
+    echo "${cmd}"
+    "${cmd}"
     # avoid flow breaking in case linting raises error
     exit 0
 }

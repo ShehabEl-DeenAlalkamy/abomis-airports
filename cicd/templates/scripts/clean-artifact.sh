@@ -10,7 +10,7 @@ clean_artifact() {
         rm -rf "${BUILD_ARTIFACTSTAGINGDIRECTORY}"/"${artifact:?}"
     else
         echo "${ADO_DEBUG_CMD}${BUILD_ARTIFACTSTAGINGDIRECTORY}"/"${artifact}" not found
-        echo "${ADO_DEBUG_CMD}nothing to do." 
+        echo "${ADO_DEBUG_CMD}nothing to do" 
     fi
 }
 
