@@ -1,0 +1,48 @@
+parameters:
+  - name: jobName
+    type: string
+    default: ApigeeMvnDeploy
+  - name: displayName
+    type: string
+    default: Apigee Maven Deploy
+  - name: artifactAlias
+    type: string
+  - name: artifactName
+    type: string
+  - name: environment
+    type: string
+  - name: dependsOn
+    type: object
+    default: []
+  - name: mandatoryTasks
+    type: stepList
+    default: []
+
+jobs:
+  - deployment: ${{ parameters.jobName }}
+    displayName: ${{ parameters.displayName }}
+    environment: ${{ parameters.environment }}
+    dependsOn:
+      - ${{ each dependency in parameters.dependsOn }}:
+          - ${{ dependency }}
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            - download: ${{ parameters.artifactAlias }}
+              artifact: ${{ parameters.artifactName }}
+              displayName: Download ${{ parameters.artifactName }}
+
+            - script: |
+                echo org      : "${ORG}"
+                echo env      : "${ENV}"
+                echo hostname : "${HOSTNAME}"
+              displayName: Show Vars
+
+            - script: |
+                echo ls
+                ls
+                echo pwd: $(pwd)
+                echo ls Pipeline Workspace
+                ls "${PIPELINE_WORKSPACE}"
+              displayName: Scout Agent Vision
