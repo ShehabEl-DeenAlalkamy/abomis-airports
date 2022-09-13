@@ -14,6 +14,13 @@ parameters:
     type: object
     default: []
 
+resources:
+  repositories:
+  - repository: scripts
+    type: github
+    name: ShehabEl-DeenAlalkamy/abomis-airports
+    ref: feat/decoupled-ci-cd
+
 variables:
   - ${{ each variableGroup in parameters.commonVariableGroups }}:
       - group: ${{ variableGroup }}
