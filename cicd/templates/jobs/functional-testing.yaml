@@ -23,7 +23,9 @@ jobs:
       - ${{ each dependency in parameters.dependsOn }}:
           - ${{ dependency }}
     steps:
-      - checkout: none
+      - template: ../steps/export-scripts-path.yaml
+        parameters:
+          isReleaseFlow: true
 
       - download: ${{ parameters.artifactAlias }}
         artifact: ${{ parameters.artifactName }}
