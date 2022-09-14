@@ -44,7 +44,7 @@ parameters:
         Goal: apigee-config:flowhooks
       - DisplayName: Deploy Proxy Bundle
         Goal: apigee-enterprise:deploy    
-  - name: configs
+  - name: configList
     type: object
     default:
       - references
@@ -93,20 +93,27 @@ jobs:
               displayName: Generate SA Key File
               env:
                 GCP_SA: $(gcpServiceAccount)
-                
-            - task: Maven@3
-              displayName: Create Configs
+
+            - task: Bash@3
+              displayName: "Generate Apigee Configs"
               inputs:
-                mavenPomFile: "./pom.xml"
-                mavenOptions: "-Xmx3072m"
-                javaHomeOption: "JDKVersion"
-                jdkVersionOption: "1.8"
-                jdkArchitectureOption: "x64"
-                publishJUnitResults: false
-                options: -P googleapi -D org=$(org) -D env=$(env) -D sa=sa.json
-                goals: >
-                  ${{ each config in parameters.configs }}
-                    apigee-config:${{ config }}
+                filePath: $(Framework.Config.PathToScripts)/gen-apigee-configs.sh      
+              env:
+                CONFIG_LIST: ${{ parameters.configList }}          
+                
+            # - task: Maven@3
+            #   displayName: Create Configs
+            #   inputs:
+            #     mavenPomFile: "./pom.xml"
+            #     mavenOptions: "-Xmx3072m"
+            #     javaHomeOption: "JDKVersion"
+            #     jdkVersionOption: "1.8"
+            #     jdkArchitectureOption: "x64"
+            #     publishJUnitResults: false
+            #     options: -P googleapi -D org=$(org) -D env=$(env) -D sa=sa.json
+            #     goals: >
+            #       ${{ each config in parameters.configs }}
+            #         apigee-config:${{ config }}
 
             # - ${{ each DeployTask in parameters.DeployTasks }}:
             #     - task: Maven@3
