@@ -52,7 +52,7 @@ jobs:
         inputs:
           SourceFolder: $(Pipeline.Workspace)/${{ parameters.artifactAlias }}/${{ parameters.artifactName }}
           Contents: "**"
-          TargetFolder: "$(Build.SourcesDirectory)"
+          TargetFolder: $(Build.SourcesDirectory)
           OverWrite: true
 
       - script: |
@@ -62,3 +62,8 @@ jobs:
           echo ls Pipeline Workspace
           ls "${PIPELINE_WORKSPACE}"
         displayName: Scout Agent Vision
+
+      - task: Bash@3
+        displayName: Script Test
+        inputs:
+          filePath: $(Framework.Config.PathToScripts)/hello-world.sh        
