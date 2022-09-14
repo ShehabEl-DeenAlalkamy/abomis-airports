@@ -2,7 +2,7 @@
 
 main() {
     echo CONFIG_LIST: 
-    for config in '${{ parameters.configList }}'; do 
+    for config in ${{ parameters.configList }}; do 
         echo "${config}"
     done
 }
