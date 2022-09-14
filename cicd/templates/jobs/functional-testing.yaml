@@ -46,3 +46,18 @@ jobs:
           echo ls Pipeline Workspace
           ls "${PIPELINE_WORKSPACE}"
         displayName: Scout Agent Vision
+
+      - task: CopyFiles@2
+        displayName: Copy Artifacts to Build Sources Directory
+        inputs:
+          SourceFolder: $(Pipeline.Workspace)/${{ parameters.artifactAlias }}/${{ parameters.artifactName }}
+          Contents: "**"
+          TargetFolder: "$(Build.SourcesDirectory)"
+
+      - script: |
+          echo ls
+          ls
+          echo pwd: $(pwd)
+          echo ls Pipeline Workspace
+          ls "${PIPELINE_WORKSPACE}"
+        displayName: Scout Agent Vision
