@@ -17,6 +17,33 @@ parameters:
   - name: mandatoryTasks
     type: stepList
     default: []
+  - name: DeployTasks
+    type: object
+    default:
+      - DisplayName: Create Config References
+        Goal: apigee-config:references
+      - DisplayName: Create Config Keystores
+        Goal: apigee-config:keystores
+      - DisplayName: Create Config Aliases
+        Goal: apigee-config:aliases
+      - DisplayName: Create Config Target Servers
+        Goal: apigee-config:targetservers
+      - DisplayName: Create Config KVMs
+        Goal: apigee-config:keyvaluemaps
+      - DisplayName: Create Config Resource Files
+        Goal: apigee-config:resourcefiles
+      - DisplayName: Create Config API Products
+        Goal: apigee-config:apiproducts
+      - DisplayName: Create Config Developers
+        Goal: apigee-config:developers
+      - DisplayName: Create Config Apps
+        Goal: apigee-config:apps
+      - DisplayName: Create Config Reports
+        Goal: apigee-config:reports
+      - DisplayName: Create Config Flowhooks
+        Goal: apigee-config:flowhooks
+      - DisplayName: Deploy Proxy Bundle
+        Goal: apigee-enterprise:deploy    
 
 jobs:
   - deployment: ${{ parameters.jobName }}
@@ -46,9 +73,35 @@ jobs:
                 Contents: "**"
                 TargetFolder: $(Build.SourcesDirectory)
 
-  - template: ../jobs/functional-testing.yaml
-    parameters:
-      artifactAlias: ${{ parameters.artifactAlias }}
-      artifactName: ${{ parameters.artifactName }}
-      dependsOn:
-        - Deploy
+            - bash: |
+                readonly ADO_DEBUG_CMD="##[debug]"
+                echo "${ADO_DEBUG_CMD}"generating sa.json key file.
+                echo "${GCP_SA}" > sa.json
+              displayName: Generate SA Key File
+              env:
+                GCP_SA: $(gcpServiceAccount)
+                
+            - ${{ each DeployTask in parameters.DeployTasks }}:
+                - task: Maven@3.205.1
+                  displayName: ${{ DeployTask.DisplayName }}
+                  inputs:
+                    mavenPomFile: "./pom.xml"
+                    mavenOptions: "-Xmx3072m"
+                    javaHomeOption: "JDKVersion"
+                    jdkVersionOption: "1.8"
+                    jdkArchitectureOption: "x64"
+                    publishJUnitResults: false
+                    options: -P googleapi -D org=$(org) -D env=$(env) -D sa=sa.json
+                    goals: ${{ DeployTask.Goal }}
+
+            - bash: |
+                readonly ADO_DEBUG_CMD="##[debug]"
+                [[ -f sa.json ]] && echo "${ADO_DEBUG_CMD}"deleting sa.json; rm -rf sa.json
+              displayName: "Delete SA Key File"                
+
+  # - template: ../jobs/functional-testing.yaml
+  #   parameters:
+  #     artifactAlias: ${{ parameters.artifactAlias }}
+  #     artifactName: ${{ parameters.artifactName }}
+  #     dependsOn:
+  #       - Deploy
