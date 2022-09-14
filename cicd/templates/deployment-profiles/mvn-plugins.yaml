@@ -98,12 +98,10 @@ jobs:
               parameters:
                 isReleaseFlow: true
 
-            - script: |
-                echo Config List
-                for config in ${{ parameters.configList }}; do 
-                    echo "${config}"
-                done
-
+            - powershell: |
+                foreach($config in ${{ parameters.configList }}){
+                  write-host $config
+                }
 
             # - task: Bash@3
             #   displayName: "Generate Apigee Configs"
