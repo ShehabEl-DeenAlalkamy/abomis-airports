@@ -100,6 +100,7 @@ jobs:
 
             - task: Bash@3
               displayName: Delete SA Key File
+              condition: always()              
               inputs:
                 filePath: $(Framework.Config.PathToScripts)/sa-key-manager.sh
                 arguments: delete
