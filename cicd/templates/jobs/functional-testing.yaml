@@ -67,8 +67,8 @@ jobs:
           pathToPublish: $(Build.ArtifactStagingDirectory)/functional-testing
           artifactName: functional-testing-$(env)
 
-      - bash: |
-          readonly ADO_DEBUG_CMD="##[debug]"
-          echo "${ADO_DEBUG_CMD}"deleting "${BUILD_ARTIFACTSTAGINGDIRECTORY}"/functional-testing.
-          rm -rf "${BUILD_ARTIFACTSTAGINGDIRECTORY}"/functional-testing
+      - task: Bash@3
         displayName: Artifacts Cleaning
+        inputs:
+          filePath: $(Framework.Config.PathToScripts)/clean-artifact.sh
+          arguments: -a functional-testing
