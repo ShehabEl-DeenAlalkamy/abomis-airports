@@ -69,31 +69,35 @@ jobs:
       runOnce:
         deploy:
           steps:
-            - download: ${{ parameters.artifactAlias }}
-              artifact: ${{ parameters.artifactName }}
-              displayName: Download ${{ parameters.artifactName }}
+            # - download: ${{ parameters.artifactAlias }}
+            #   artifact: ${{ parameters.artifactName }}
+            #   displayName: Download ${{ parameters.artifactName }}
 
-            - script: |
-                echo org      : "${ORG}"
-                echo env      : "${ENV}"
-                echo hostname : "${HOSTNAME}"
-              displayName: Show Vars
+            # - script: |
+            #     echo org      : "${ORG}"
+            #     echo env      : "${ENV}"
+            #     echo hostname : "${HOSTNAME}"
+            #   displayName: Show Vars
 
-            - task: CopyFiles@2
-              displayName: Copy Artifacts to Build Sources Directory
-              inputs:
-                SourceFolder: $(Pipeline.Workspace)/${{ parameters.artifactAlias }}/${{ parameters.artifactName }}
-                Contents: "**"
-                TargetFolder: $(Build.SourcesDirectory)
+            # - task: CopyFiles@2
+            #   displayName: Copy Artifacts to Build Sources Directory
+            #   inputs:
+            #     SourceFolder: $(Pipeline.Workspace)/${{ parameters.artifactAlias }}/${{ parameters.artifactName }}
+            #     Contents: "**"
+            #     TargetFolder: $(Build.SourcesDirectory)
 
-            - bash: |
-                readonly ADO_DEBUG_CMD="##[debug]"
-                echo "${ADO_DEBUG_CMD}"generating sa.json key file.
-                echo "${GCP_SA}" > sa.json
-              displayName: Generate SA Key File
-              env:
-                GCP_SA: $(gcpServiceAccount)
+            # - bash: |
+            #     readonly ADO_DEBUG_CMD="##[debug]"
+            #     echo "${ADO_DEBUG_CMD}"generating sa.json key file.
+            #     echo "${GCP_SA}" > sa.json
+            #   displayName: Generate SA Key File
+            #   env:
+            #     GCP_SA: $(gcpServiceAccount)
 
+            - template: ../steps/export-scripts-path.yaml
+              parameters:
+                isReleaseFlow: true
+                  
             - task: Bash@3
               displayName: "Generate Apigee Configs"
               inputs:
