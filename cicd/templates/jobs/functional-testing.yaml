@@ -57,8 +57,6 @@ jobs:
           mkdir -p "${BUILD_ARTIFACTSTAGINGDIRECTORY}"/functional-testing/cucumber
           echo "TEST_HOST=${HOSTNAME} node node_modules/.bin/cucumber-js --publish-quiet "${PATH_TO_TARGET}"/test/integration --format json:"${BUILD_ARTIFACTSTAGINGDIRECTORY}"/functional-testing/cucumber/reports.json"
           TEST_HOST="${HOSTNAME}" node node_modules/.bin/cucumber-js --publish-quiet "${PATH_TO_TARGET}"/test/integration --format json:"${BUILD_ARTIFACTSTAGINGDIRECTORY}"/functional-testing/cucumber/reports.json
-          echo "TEST_HOST=${HOSTNAME} node node_modules/.bin/cucumber-js --publish-quiet "${PATH_TO_TARGET}"/test/integration --format html:"${BUILD_ARTIFACTSTAGINGDIRECTORY}"/functional-testing/cucumber/reports.json"
-          TEST_HOST="${HOSTNAME}" node node_modules/.bin/cucumber-js --publish-quiet "${PATH_TO_TARGET}"/test/integration --format html:"${BUILD_ARTIFACTSTAGINGDIRECTORY}"/functional-testing/cucumber/reports.html
         displayName: "FT: CucumberJS"
         env:
           PATH_TO_TARGET: $(Build.SourcesDirectory)/target
