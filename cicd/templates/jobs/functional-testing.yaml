@@ -72,20 +72,3 @@ jobs:
           echo "${ADO_DEBUG_CMD}"deleting "${BUILD_ARTIFACTSTAGINGDIRECTORY}"/functional-testing.
           rm -rf "${BUILD_ARTIFACTSTAGINGDIRECTORY}"/functional-testing
         displayName: Artifacts Cleaning
-
-      # - bash: |
-      #     readonly ADO_DEBUG_CMD="##[debug]"
-      #     export PATH_TO_TARGET=./target
-      #     echo "${ADO_DEBUG_CMD}"creating "${BUILD_ARTIFACTSTAGINGDIRECTORY}"/functional-testing/cucumber
-      #     mkdir -p ./functional-testing/cucumber
-      #     echo "TEST_HOST=${HOST_NAME} node node_modules/.bin/cucumber-js --publish-quiet "${PATH_TO_TARGET}"/test/integration --format html:./functional-testing/cucumber/report.html"
-      #     TEST_HOST="${HOST_NAME}" node node_modules/.bin/cucumber-js --publish-quiet "${PATH_TO_TARGET}"/test/integration --format html:./functional-testing/cucumber/report.html
-      #   displayName: "FT: CucumberJS"
-      #   env:
-      #     HOST_NAME: $(hostname)
-
-      # - task: PublishBuildArtifacts@1
-      #   displayName: "Publish: Functional Tests Results"
-      #   inputs:
-      #     pathToPublish: ./functional-testing
-      #     artifactName: functional-testing-${{ parameters.EnvName }}
