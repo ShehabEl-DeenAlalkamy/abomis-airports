@@ -23,6 +23,8 @@ jobs:
       - ${{ each dependency in parameters.dependsOn }}:
           - ${{ dependency }}
     steps:
+      - ${{ parameters.mandatoryTasks }}
+
       - template: ../steps/export-scripts-path.yaml
         parameters:
           isReleaseFlow: true
@@ -30,8 +32,6 @@ jobs:
       - download: ${{ parameters.artifactAlias }}
         artifact: ${{ parameters.artifactName }}
         displayName: Download ${{ parameters.artifactName }}
-
-      - ${{ parameters.mandatoryTasks }}
 
       - script: |
           echo org      : "${ORG}"
@@ -45,4 +45,31 @@ jobs:
           SourceFolder: $(Pipeline.Workspace)/${{ parameters.artifactAlias }}/${{ parameters.artifactName }}
           Contents: "**"
           TargetFolder: $(Build.SourcesDirectory)
-          OverWrite: true     
+          OverWrite: true
+
+      - task: NodeTool@0
+        displayName: "Install Node 18.0.0"
+        inputs:
+          versionSpec: 18.0.0
+
+      - task: Npm@1
+        displayName: "npm install"
+        inputs:
+          verbose: false
+
+      - bash: |
+          readonly ADO_DEBUG_CMD="##[debug]"
+          export PATH_TO_TARGET=./target
+          echo "${ADO_DEBUG_CMD}"creating "${BUILD_ARTIFACTSTAGINGDIRECTORY}"/functional-testing/cucumber      
+          mkdir -p ./functional-testing/cucumber
+          echo "TEST_HOST=${HOST_NAME} node node_modules/.bin/cucumber-js --publish-quiet "${PATH_TO_TARGET}"/test/integration --format html:./functional-testing/cucumber/report.html"
+          TEST_HOST="${HOST_NAME}" node node_modules/.bin/cucumber-js --publish-quiet "${PATH_TO_TARGET}"/test/integration --format html:./functional-testing/cucumber/report.html
+        displayName: "FT: CucumberJS"
+        env:
+          HOST_NAME: $(hostname)
+
+      - task: PublishBuildArtifacts@1
+        displayName: "Publish: Functional Tests Results"
+        inputs:
+          pathToPublish: ./functional-testing
+          artifactName: functional-testing-${{ parameters.EnvName }}
