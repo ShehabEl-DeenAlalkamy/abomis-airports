@@ -8,7 +8,7 @@ main() {
     echo untrimmed apigee_config_goals: 
     echo "${apigee_config_goals}"
     echo trimmed apigee_config_goals: 
-    echo "${apigee_config_goals##*( )}"
+    echo "${apigee_config_goals}" | xargs
 }
 
 [[ "${0}" == "${BASH_SOURCE[0]}" ]] && main "${*}"
