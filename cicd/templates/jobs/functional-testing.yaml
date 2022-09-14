@@ -60,6 +60,7 @@ jobs:
 
       - task: PublishTestResults@2
         displayName: Consume FT Results
+        condition: always()
         inputs:
           testResultsFormat: JUnit
           testResultsFiles: "**/*.xml"
@@ -68,6 +69,7 @@ jobs:
 
       - task: Bash@3
         displayName: Artifacts Cleaning
+        condition: always()        
         inputs:
           filePath: $(Framework.Config.PathToScripts)/clean-artifact.sh
           arguments: -a functional-testing
