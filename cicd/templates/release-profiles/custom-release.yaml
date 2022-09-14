@@ -4,10 +4,13 @@ parameters:
   - name: artifactAlias
     type: string
   - name: artifactName
-    type: string    
+    type: string
   - name: releaseList
     type: object
-    default: []
+  - name: deploymentConfig
+    type: object
+  - name: apigeeConfigList
+    type: object    
 
 stages:
   - ${{ each release in parameters.releaseList }}:
@@ -21,3 +24,5 @@ stages:
               artifactAlias: ${{ parameters.artifactAlias }}
               artifactName: ${{ parameters.artifactName }}
               environment: ${{ release.environment }}
+              ${{ if eq(parameters.deploymentConfig.customApigeeConfig, 'true') }}:
+                apigeeConfigList: ${{ parameters.apigeeConfigList }}

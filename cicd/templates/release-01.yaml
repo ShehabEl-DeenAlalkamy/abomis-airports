@@ -6,21 +6,27 @@ parameters:
   - name: artifactAlias
     type: string
   - name: artifactName
-    type: string   
+    type: string
   - name: releaseList
     type: object
     default: []
   - name: commonVariableGroups
     type: object
     default: []
+  - name: deploymentConfig
+    type: object
+    default: []
+  - name: apigeeConfigList
+    type: object
+    default: []
 
 resources:
   repositories:
-  - repository: scripts
-    type: github
-    name: ShehabEl-DeenAlalkamy/abomis-airports
-    ref: feat/decoupled-ci-cd
-    endpoint: ShehabEl-DeenAlalkamy
+    - repository: scripts
+      type: github
+      name: ShehabEl-DeenAlalkamy/abomis-airports
+      ref: feat/decoupled-ci-cd
+      endpoint: ShehabEl-DeenAlalkamy
 
 variables:
   - ${{ each variableGroup in parameters.commonVariableGroups }}:
@@ -32,5 +38,7 @@ stages:
       deploymentProfile: ${{ parameters.deploymentProfile }}
       artifactAlias: ${{ parameters.artifactAlias }}
       artifactName: ${{ parameters.artifactName }}
+      deploymentConfig: ${{ parameters.deploymentConfig }}
+      apigeeConfigList: ${{ parameters.apigeeConfigList }}
       ${{ if eq(parameters.releaseProfile, 'custom-release') }}:
         releaseList: ${{ parameters.releaseList }}
