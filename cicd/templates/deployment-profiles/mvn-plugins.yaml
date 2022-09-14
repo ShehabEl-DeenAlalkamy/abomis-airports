@@ -97,11 +97,18 @@ jobs:
             - template: ../steps/export-scripts-path.yaml
               parameters:
                 isReleaseFlow: true
-                  
-            - task: Bash@3
-              displayName: "Generate Apigee Configs"
-              inputs:
-                filePath: $(Framework.Config.PathToScripts)/gen-apigee-configs.sh      
+
+            - script: |
+                echo Config List
+                for config in ${{ parameters.configList }}; do 
+                    echo "${config}"
+                done
+
+
+            # - task: Bash@3
+            #   displayName: "Generate Apigee Configs"
+            #   inputs:
+            #     filePath: $(Framework.Config.PathToScripts)/gen-apigee-configs.sh      
                 
             # - task: Maven@3
             #   displayName: Create Configs
