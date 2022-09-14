@@ -4,7 +4,7 @@ main() {
     readonly ADO_DEBUG_CMD="##[debug]"
     echo Supplied Configs:
     echo -----------------
-    apigee_config_goals
+    apigee_config_goals=''
     for config in $(echo "${CONFIG_LIST}" | jq -r '.[]'); do
         echo "- ${config}"
         apigee_config_goals+=" apigee-config:${config}"
