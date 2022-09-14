@@ -98,8 +98,6 @@ jobs:
               displayName: "Generate Apigee Configs"
               inputs:
                 filePath: $(Framework.Config.PathToScripts)/gen-apigee-configs.sh      
-              env:
-                CONFIG_LIST: ${{ parameters.configList }}          
                 
             # - task: Maven@3
             #   displayName: Create Configs
