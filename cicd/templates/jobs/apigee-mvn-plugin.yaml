@@ -36,7 +36,8 @@ jobs:
           jdkVersionOption: "1.8"
           jdkArchitectureOption: "x64"
           publishJUnitResults: false
-          goals: package -P googleapi -D deployment.description=${PROXY_DESC}
+          options: -P googleapi -D deployment.description=${PROXY_DESC}
+          goals: package
         env:
           PROXY_DESC: $(proxyDesc)
 
