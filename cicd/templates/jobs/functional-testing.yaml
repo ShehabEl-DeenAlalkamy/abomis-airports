@@ -42,12 +42,12 @@ jobs:
           OverWrite: true
 
       - task: NodeTool@0
-        displayName: "Install Node 18.0.0"
+        displayName: Install Node 18.0.0
         inputs:
           versionSpec: 18.0.0
 
       - task: Npm@1
-        displayName: "npm install"
+        displayName: npm install
         inputs:
           verbose: false
 
