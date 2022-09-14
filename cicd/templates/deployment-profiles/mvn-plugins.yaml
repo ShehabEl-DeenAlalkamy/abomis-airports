@@ -39,10 +39,16 @@ jobs:
                 echo hostname : "${HOSTNAME}"
               displayName: Show Vars
 
+            - task: CopyFiles@2
+              displayName: Copy Artifacts to Build Sources Directory
+              inputs:
+                SourceFolder: $(Pipeline.Workspace)/${{ parameters.artifactAlias }}/${{ parameters.artifactName }}
+                Contents: "**"
+                TargetFolder: $(Build.SourcesDirectory)
 
   - template: ../jobs/functional-testing.yaml
     parameters:
       artifactAlias: ${{ parameters.artifactAlias }}
-      artifactName: ${{ parameters.artifactName }}    
+      artifactName: ${{ parameters.artifactName }}
       dependsOn:
         - Deploy
