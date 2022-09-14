@@ -42,4 +42,4 @@ extends:
       - reports
       - flowhooks
     deploymentConfig:
-      customApigeeConfig: true
+      customApigeeConfig: false
