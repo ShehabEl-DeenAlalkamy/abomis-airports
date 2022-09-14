@@ -2,11 +2,11 @@
 
 main() {
     readonly ADO_DEBUG_CMD="##[debug]"
-    echo "${ADO_DEBUG_CMD}"Supplied Configs:
-    echo "${ADO_DEBUG_CMD}"-----------------
+    echo Supplied Configs:
+    echo -----------------
     apigee_config_goals
     for config in $(echo "${CONFIG_LIST}" | jq -r '.[]'); do
-        echo "${ADO_DEBUG_CMD}- ${config}":
+        echo "- ${config}"
         apigee_config_goals+=" apigee-config:${config}"
     done
     # trim apigee_config_goals
