@@ -58,11 +58,13 @@ jobs:
         env:
           SOURCE_PATH: $(Build.SourcesDirectory)/target/test/integration
 
-      - task: PublishBuildArtifacts@1
-        displayName: "Publish: Functional Tests Results"
+      - task: PublishTestResults@2
+        displayName: Consume FT Results
         inputs:
-          pathToPublish: $(Build.ArtifactStagingDirectory)/functional-testing
-          artifactName: functional-testing-$(env)
+          testResultsFormat: JUnit
+          testResultsFiles: "**/*.xml"
+          searchFolder: $(Build.ArtifactStagingDirectory)/functional-testing
+          failTaskOnFailedTests: true
 
       - task: Bash@3
         displayName: Artifacts Cleaning
