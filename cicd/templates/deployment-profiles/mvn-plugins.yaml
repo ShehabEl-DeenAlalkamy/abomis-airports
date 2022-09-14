@@ -39,13 +39,6 @@ jobs:
                 echo hostname : "${HOSTNAME}"
               displayName: Show Vars
 
-            - script: |
-                echo ls
-                ls
-                echo pwd: $(pwd)
-                echo ls Pipeline Workspace
-                ls "${PIPELINE_WORKSPACE}"
-              displayName: Scout Agent Vision
 
   - template: ../jobs/functional-testing.yaml
     parameters:
