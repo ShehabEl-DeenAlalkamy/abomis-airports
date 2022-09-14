@@ -82,7 +82,7 @@ jobs:
                 GCP_SA: $(gcpServiceAccount)
                 
             - ${{ each DeployTask in parameters.DeployTasks }}:
-                - task: Maven@3.205.1
+                - task: Maven@3
                   displayName: ${{ DeployTask.DisplayName }}
                   inputs:
                     mavenPomFile: "./pom.xml"
