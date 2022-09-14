@@ -37,3 +37,9 @@ extends:
         displayName: Prod
         variableGroup: abomis-airports-prd-env
         environment: abomis-prd
+    apigeeConfigList:
+      - developers
+      - reports
+      - flowhooks
+    deploymentConfig:
+      customApigeeConfig: true
