@@ -17,33 +17,6 @@ parameters:
   - name: mandatoryTasks
     type: stepList
     default: []
-  - name: DeployTasks
-    type: object
-    default:
-      - DisplayName: Create Config References
-        Goal: apigee-config:references
-      - DisplayName: Create Config Keystores
-        Goal: apigee-config:keystores
-      - DisplayName: Create Config Aliases
-        Goal: apigee-config:aliases
-      - DisplayName: Create Config Target Servers
-        Goal: apigee-config:targetservers
-      - DisplayName: Create Config KVMs
-        Goal: apigee-config:keyvaluemaps
-      - DisplayName: Create Config Resource Files
-        Goal: apigee-config:resourcefiles
-      - DisplayName: Create Config API Products
-        Goal: apigee-config:apiproducts
-      - DisplayName: Create Config Developers
-        Goal: apigee-config:developers
-      - DisplayName: Create Config Apps
-        Goal: apigee-config:apps
-      - DisplayName: Create Config Reports
-        Goal: apigee-config:reports
-      - DisplayName: Create Config Flowhooks
-        Goal: apigee-config:flowhooks
-      - DisplayName: Deploy Proxy Bundle
-        Goal: apigee-enterprise:deploy
   - name: configList
     type: object
     default:
@@ -69,6 +42,8 @@ jobs:
       runOnce:
         deploy:
           steps:
+            - ${{ parameters.mandatoryTasks }}
+
             - download: ${{ parameters.artifactAlias }}
               artifact: ${{ parameters.artifactName }}
               displayName: Download ${{ parameters.artifactName }}
@@ -76,8 +51,6 @@ jobs:
             - template: ../steps/export-scripts-path.yaml
               parameters:
                 isReleaseFlow: true
-
-            - ${{ parameters.mandatoryTasks }}
 
             - script: |
                 echo org      : "${ORG}"
@@ -101,47 +74,44 @@ jobs:
                 GCP_SA: $(gcpServiceAccount)
 
             - task: Bash@3
-              displayName: Generate Apigee Configs
+              displayName: Generate Apigee Config Goals
               inputs:
                 filePath: $(Framework.Config.PathToScripts)/gen-apigee-configs.sh
               env:
                 CONFIG_LIST: ${{ convertToJson(parameters.configList) }}
 
-            # - task: Maven@3
-            #   displayName: Create Configs
-            #   inputs:
-            #     mavenPomFile: "./pom.xml"
-            #     mavenOptions: "-Xmx3072m"
-            #     javaHomeOption: "JDKVersion"
-            #     jdkVersionOption: "1.8"
-            #     jdkArchitectureOption: "x64"
-            #     publishJUnitResults: false
-            #     options: -P googleapi -D org=$(org) -D env=$(env) -D sa=sa.json
-            #     goals: >
-            #       ${{ each config in parameters.configs }}
-            #         apigee-config:${{ config }}
+            - task: Maven@3
+              displayName: Create Configs
+              inputs:
+                mavenPomFile: "./pom.xml"
+                mavenOptions: "-Xmx3072m"
+                javaHomeOption: "JDKVersion"
+                jdkVersionOption: "1.8"
+                jdkArchitectureOption: "x64"
+                publishJUnitResults: false
+                options: -P googleapi -D org=$(org) -D env=$(env) -D sa=sa.json
+                goals: $(Framework.Config.Mvn.ApigeeConfigGoals)
 
-            # - ${{ each DeployTask in parameters.DeployTasks }}:
-            #     - task: Maven@3
-            #       displayName: ${{ DeployTask.DisplayName }}
-            #       inputs:
-            #         mavenPomFile: "./pom.xml"
-            #         mavenOptions: "-Xmx3072m"
-            #         javaHomeOption: "JDKVersion"
-            #         jdkVersionOption: "1.8"
-            #         jdkArchitectureOption: "x64"
-            #         publishJUnitResults: false
-            #         options: -P googleapi -D org=$(org) -D env=$(env) -D sa=sa.json
-            #         goals: ${{ DeployTask.Goal }}
+            - task: Maven@3
+              displayName: Deploy Proxy Bundle
+              inputs:
+                mavenPomFile: "./pom.xml"
+                mavenOptions: "-Xmx3072m"
+                javaHomeOption: "JDKVersion"
+                jdkVersionOption: "1.8"
+                jdkArchitectureOption: "x64"
+                publishJUnitResults: false
+                options: -P googleapi -D org=$(org) -D env=$(env) -D sa=sa.json
+                goals: apigee-enterprise:deploy
 
             - bash: |
                 readonly ADO_DEBUG_CMD="##[debug]"
                 [[ -f sa.json ]] && echo "${ADO_DEBUG_CMD}"deleting sa.json; rm -rf sa.json
               displayName: "Delete SA Key File"
 
-  # - template: ../jobs/functional-testing.yaml
-  #   parameters:
-  #     artifactAlias: ${{ parameters.artifactAlias }}
-  #     artifactName: ${{ parameters.artifactName }}
-  #     dependsOn:
-  #       - Deploy
+  - template: ../jobs/functional-testing.yaml
+    parameters:
+      artifactAlias: ${{ parameters.artifactAlias }}
+      artifactName: ${{ parameters.artifactName }}
+      dependsOn:
+        - Deploy
