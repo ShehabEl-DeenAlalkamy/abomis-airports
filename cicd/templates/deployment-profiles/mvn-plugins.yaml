@@ -52,12 +52,6 @@ jobs:
               parameters:
                 isReleaseFlow: true
 
-            - script: |
-                echo org      : "${ORG}"
-                echo env      : "${ENV}"
-                echo hostname : "${HOSTNAME}"
-              displayName: Show Vars
-
             - task: CopyFiles@2
               displayName: Copy Artifacts to Build Sources Directory
               inputs:

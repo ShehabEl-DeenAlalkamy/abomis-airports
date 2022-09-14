@@ -33,12 +33,6 @@ jobs:
         artifact: ${{ parameters.artifactName }}
         displayName: Download ${{ parameters.artifactName }}
 
-      - script: |
-          echo org      : "${ORG}"
-          echo env      : "${ENV}"
-          echo hostname : "${HOSTNAME}"
-        displayName: Show Vars
-
       - task: CopyFiles@2
         displayName: Copy Artifacts to Build Sources Directory
         inputs:
