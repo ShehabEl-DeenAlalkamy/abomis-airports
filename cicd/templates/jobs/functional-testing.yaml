@@ -53,6 +53,7 @@ jobs:
           SourceFolder: $(Pipeline.Workspace)/${{ parameters.artifactAlias }}/${{ parameters.artifactName }}
           Contents: "**"
           TargetFolder: "$(Build.SourcesDirectory)"
+          OverWrite: true
 
       - script: |
           echo ls
