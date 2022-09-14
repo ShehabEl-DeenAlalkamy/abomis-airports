@@ -6,9 +6,9 @@ main() {
         apigee_config_goals+=" apigee-config:${config}"
     done
     echo untrimmed apigee_config_goals: 
-    "${apigee_config_goals}"
+    echo "${apigee_config_goals}"
     echo trimmed apigee_config_goals: 
-    "${apigee_config_goals##*( )}"
+    echo "${apigee_config_goals##*( )}"
 }
 
 [[ "${0}" == "${BASH_SOURCE[0]}" ]] && main "${*}"
