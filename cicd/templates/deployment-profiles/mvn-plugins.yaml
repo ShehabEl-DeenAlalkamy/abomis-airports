@@ -99,8 +99,12 @@ jobs:
                 isReleaseFlow: true
 
             - script: |
+                echo ${{ convertToJson(parameters.configList) }}
+                my_var='${{ convertToJson(parameters.configList) }}'
+                echo my_var:
+                echo $my_var
                 echo Config
-                for config in ${{ convertToJson(parameters.configList) }}; do 
+                for config in $(echo ${{ convertToJson(parameters.configList) }} | jq -r '.[]') ; do 
                     echo "${config}"
                 done
 
