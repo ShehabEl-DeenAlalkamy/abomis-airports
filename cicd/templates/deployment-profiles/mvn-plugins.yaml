@@ -76,7 +76,7 @@ jobs:
             - task: Bash@3
               displayName: Generate Apigee Config Goals
               inputs:
-                filePath: $(Framework.Config.PathToScripts)/gen-apigee-configs.sh
+                filePath: $(Framework.Config.PathToScripts)/gen-apigee-config-goals.sh
               env:
                 CONFIG_LIST: ${{ convertToJson(parameters.configList) }}
 
