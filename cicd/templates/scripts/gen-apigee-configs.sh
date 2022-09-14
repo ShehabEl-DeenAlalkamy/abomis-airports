@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 
 main() {
-    echo CONFIG_LIST: 
-    for config in ${{ parameters.configList }}; do 
-        echo "${config}"
+    apigee_config_goals
+    for config in $(echo "${CONFIG_LIST}" | jq -r '.[]'); do
+        apigee_config_goals+=" apigee-config:${config}"
     done
+    echo apigee_config_goals: "${apigee_config_goals}"
 }
 
 [[ "${0}" == "${BASH_SOURCE[0]}" ]] && main "${*}"

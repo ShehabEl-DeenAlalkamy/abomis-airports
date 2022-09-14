@@ -43,7 +43,7 @@ parameters:
       - DisplayName: Create Config Flowhooks
         Goal: apigee-config:flowhooks
       - DisplayName: Deploy Proxy Bundle
-        Goal: apigee-enterprise:deploy    
+        Goal: apigee-enterprise:deploy
   - name: configList
     type: object
     default:
@@ -69,51 +69,44 @@ jobs:
       runOnce:
         deploy:
           steps:
-            # - download: ${{ parameters.artifactAlias }}
-            #   artifact: ${{ parameters.artifactName }}
-            #   displayName: Download ${{ parameters.artifactName }}
-
-            # - script: |
-            #     echo org      : "${ORG}"
-            #     echo env      : "${ENV}"
-            #     echo hostname : "${HOSTNAME}"
-            #   displayName: Show Vars
-
-            # - task: CopyFiles@2
-            #   displayName: Copy Artifacts to Build Sources Directory
-            #   inputs:
-            #     SourceFolder: $(Pipeline.Workspace)/${{ parameters.artifactAlias }}/${{ parameters.artifactName }}
-            #     Contents: "**"
-            #     TargetFolder: $(Build.SourcesDirectory)
-
-            # - bash: |
-            #     readonly ADO_DEBUG_CMD="##[debug]"
-            #     echo "${ADO_DEBUG_CMD}"generating sa.json key file.
-            #     echo "${GCP_SA}" > sa.json
-            #   displayName: Generate SA Key File
-            #   env:
-            #     GCP_SA: $(gcpServiceAccount)
+            - download: ${{ parameters.artifactAlias }}
+              artifact: ${{ parameters.artifactName }}
+              displayName: Download ${{ parameters.artifactName }}
 
             - template: ../steps/export-scripts-path.yaml
               parameters:
                 isReleaseFlow: true
 
+            - ${{ parameters.mandatoryTasks }}
+
             - script: |
-                echo ${{ convertToJson(parameters.configList) }}
-                my_var='${{ convertToJson(parameters.configList) }}'
-                echo my_var:
-                echo $my_var
-                echo Config
-                for config in $(echo ${{ convertToJson(parameters.configList) }} | jq -r '.[]') ; do 
-                    echo "${config}"
-                done
+                echo org      : "${ORG}"
+                echo env      : "${ENV}"
+                echo hostname : "${HOSTNAME}"
+              displayName: Show Vars
 
+            - task: CopyFiles@2
+              displayName: Copy Artifacts to Build Sources Directory
+              inputs:
+                SourceFolder: $(Pipeline.Workspace)/${{ parameters.artifactAlias }}/${{ parameters.artifactName }}
+                Contents: "**"
+                TargetFolder: $(Build.SourcesDirectory)
 
-            # - task: Bash@3
-            #   displayName: "Generate Apigee Configs"
-            #   inputs:
-            #     filePath: $(Framework.Config.PathToScripts)/gen-apigee-configs.sh      
-                
+            - bash: |
+                readonly ADO_DEBUG_CMD="##[debug]"
+                echo "${ADO_DEBUG_CMD}"generating sa.json key file.
+                echo "${GCP_SA}" > sa.json
+              displayName: Generate SA Key File
+              env:
+                GCP_SA: $(gcpServiceAccount)
+
+            - task: Bash@3
+              displayName: Generate Apigee Configs
+              inputs:
+                filePath: $(Framework.Config.PathToScripts)/gen-apigee-configs.sh
+              env:
+                CONFIG_LIST: ${{ convertToJson(parameters.configList) }}
+
             # - task: Maven@3
             #   displayName: Create Configs
             #   inputs:
@@ -144,7 +137,7 @@ jobs:
             - bash: |
                 readonly ADO_DEBUG_CMD="##[debug]"
                 [[ -f sa.json ]] && echo "${ADO_DEBUG_CMD}"deleting sa.json; rm -rf sa.json
-              displayName: "Delete SA Key File"                
+              displayName: "Delete SA Key File"
 
   # - template: ../jobs/functional-testing.yaml
   #   parameters:
