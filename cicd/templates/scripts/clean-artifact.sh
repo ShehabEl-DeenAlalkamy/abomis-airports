@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-#  Author: Shehab El-Deen Alalkamy <shehabeldeen.essam@vodafone.com>
+#  Author: Shehab El-Deen Alalkamy <shehabeldeenalalkamy@gmail.com>
 
 show_usage() { echo "${USAGE}"; }
 
