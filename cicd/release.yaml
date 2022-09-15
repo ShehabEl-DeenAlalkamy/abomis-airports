@@ -1,12 +1,4 @@
-trigger:
-  branches:
-    include:
-      - feat/decoupled-ci-cd
-  paths:
-    exclude:
-      - "docs/**"
-      - ".gitignore"
-      - "README.md"
+trigger: none
 
 resources:
   repositories:
@@ -15,6 +7,10 @@ resources:
   pipelines:
     - pipeline: abomis-airports-ci
       source: abomis-airports-ci
+      trigger:
+        branches:
+          include:
+            - feat/decoupled-ci-cd      
 
 pool:
   vmImage: ubuntu-latest
@@ -29,6 +25,10 @@ extends:
     commonVariableGroups:
       - abomis-airports-common
     releaseList:
+      - stageName: Dev
+        displayName: Dev
+        variableGroup: abomis-airports-dev-env
+        environment: abomis-dev
       - stageName: Test
         displayName: Test
         variableGroup: abomis-airports-tst-env
