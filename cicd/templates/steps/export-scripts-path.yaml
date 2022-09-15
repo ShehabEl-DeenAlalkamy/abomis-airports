@@ -5,11 +5,11 @@ parameters:
 
 steps:
   - ${{ if eq(parameters.isReleaseFlow, true) }}:
-    - checkout: scripts
-      displayName: Checkout scripts
-      path: s/scripts
-      fetchDepth: 1
-      clean: true
+      - checkout: scripts
+        displayName: Checkout scripts
+        path: s/scripts
+        fetchDepth: 1
+        clean: true
 
   - bash: |
       path_to_scripts="${BUILD_SOURCESDIRECTORY}"/cicd/templates/scripts
