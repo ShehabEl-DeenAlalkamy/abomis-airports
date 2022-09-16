@@ -25,7 +25,7 @@ resources:
     - repository: scripts
       type: github
       name: ShehabEl-DeenAlalkamy/abomis-airports
-      ref: feat/decoupled-ci-cd
+      ref: main
       endpoint: GitHubSvcConn
 
 variables:
