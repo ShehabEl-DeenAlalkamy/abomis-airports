@@ -26,7 +26,7 @@ resources:
       type: github
       name: ShehabEl-DeenAlalkamy/abomis-airports
       ref: feat/decoupled-ci-cd
-      endpoint: ShehabEl-DeenAlalkamy
+      endpoint: GitHubSvcConn
 
 variables:
   - ${{ each variableGroup in parameters.commonVariableGroups }}:
