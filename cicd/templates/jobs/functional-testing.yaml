@@ -69,7 +69,7 @@ jobs:
 
       - task: Bash@3
         displayName: Artifacts Cleaning
-        condition: always()        
+        condition: always()
         inputs:
           filePath: $(Framework.Config.PathToScripts)/clean-artifact.sh
           arguments: -a functional-testing
