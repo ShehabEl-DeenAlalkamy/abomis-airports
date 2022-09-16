@@ -10,7 +10,7 @@ resources:
       trigger:
         branches:
           include:
-            - feat/decoupled-ci-cd      
+            - main
 
 pool:
   vmImage: ubuntu-latest
