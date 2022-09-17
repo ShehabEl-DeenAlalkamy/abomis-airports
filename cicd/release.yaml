@@ -7,7 +7,7 @@ resources:
     - repository: apigee-core
       type: github
       name: ShehabEl-DeenAlalkamy/apigee-core-yaml-pipeline-templates
-      ref: feat/api-proxy-framework
+      ref: main
       endpoint: ShehabEl-DeenAlalkamy
   pipelines:
     - pipeline: abomis-airports-ci
