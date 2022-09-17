@@ -4,6 +4,11 @@ resources:
   repositories:
     - repository: self
       clean: true
+    - repository: apigee-core
+      type: github
+      name: ShehabEl-DeenAlalkamy/apigee-core-yaml-pipeline-templates
+      ref: feat/api-proxy-framework
+      endpoint: GitHubSvcConn      
   pipelines:
     - pipeline: abomis-airports-ci
       source: abomis-airports-ci
@@ -16,7 +21,7 @@ pool:
   vmImage: ubuntu-latest
 
 extends:
-  template: templates/release-01.yaml
+  template: release-01.yaml@apigee-core
   parameters:
     releaseProfile: custom-release
     deploymentProfile: mvn-plugins
