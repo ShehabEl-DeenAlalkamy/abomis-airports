@@ -8,6 +8,18 @@ trigger:
       - ".gitignore"
       - "README.md"
 
+pr:
+  branches:
+    include:
+      - main
+      - master
+      - rel/**
+  paths:
+    exclude:
+      - "docs/**"
+      - ".gitignore"
+      - "README.md"
+
 resources:
   repositories:
     - repository: self
