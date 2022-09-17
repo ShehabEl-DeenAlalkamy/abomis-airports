@@ -21,7 +21,7 @@
     <groupId>com.abomis</groupId>
     <artifactId>abomis-airports</artifactId>
     <version>v1</version>
-    <name>abomis-airports${deployment.suffix}</name>
+    <name>abomis-airports${deployment.suffix}-${project.version}</name>
     <packaging>pom</packaging>
 
     <pluginRepositories>
@@ -58,23 +58,11 @@
         <apigee.env>${env}</apigee.env>
         <deployment.description>n/a</deployment.description>
         <apigee.config.options>update</apigee.config.options>
-        <apigee.config.dir>resources/edge</apigee.config.dir>
+        <apigee.config.dir>${basedir}/target/resources/edge</apigee.config.dir>
+        <proxy.filename>abomis-airports-v1.xml</proxy.filename>
     </properties>
 
     <profiles>
-        <profile>
-            <!-- Apigee Edge -->
-            <id>apigeeapi</id>
-            <properties>
-                <apigee.plugin.version>1.3.3</apigee.plugin.version>
-                <apigee.config-plugin.version>1.5.3</apigee.config-plugin.version>
-                <apigee.hosturl>https://api.enterprise.apigee.com</apigee.hosturl>
-                <apigee.authtype>oauth</apigee.authtype>
-                <apigee.username>${username}</apigee.username>
-                <apigee.password>${password}</apigee.password>
-            </properties>
-        </profile>
-
         <profile>
             <!-- Apigee X and hybrid -->
             <id>googleapi</id>
@@ -148,19 +136,13 @@
                 <configuration>
                     <basedir>${target.root.dir}</basedir>
                     <includes>
-                        <include>test/integration/support/init.js</include>
-                        <include>apiproxy/abomis-airports-v1.xml</include>
+                        <include>apiproxy/${proxy.filename}</include>
                         <include>apiproxy/proxies/default.xml</include>
                     </includes>
                     <replacements>
                         <replacement>
-                            <token>org-env.apigee.net</token>
-                            <value>${apigee.org}-${apigee.env}.apigee.net</value>
-                        </replacement>
-
-                        <replacement>
-                            <token>/abomis-airports/v1</token>
-                            <value>/abomis-airports${deployment.suffix}/v1</value>
+                            <token>/${project.artifactId}/${project.version}</token>
+                            <value>/${project.artifactId}${deployment.suffix}/${project.version}</value>
                         </replacement>
 
                         <replacement>

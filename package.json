@@ -15,9 +15,11 @@
     "@cucumber/cucumber": "^7.3.0",
     "apickli": "^3.0.1",
     "apigeelint": "^2.13.0",
+    "cucumber-junit": "^1.7.1",
     "eslint": "^7.0.0",
     "eslint-config-prettier": "^6.11.0",
     "mocha": "^7.2.0",
+    "mocha-junit-reporter": "^2.0.2",
     "nyc": "^15.1.0",
     "prettier": "^2.0.5",
     "sinon": "^9.0.2"

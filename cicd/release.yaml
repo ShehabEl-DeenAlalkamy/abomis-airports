@@ -1,0 +1,46 @@
+trigger: none
+
+pr: none
+
+resources:
+  repositories:
+    - repository: self
+      clean: true
+    - repository: apigee-core
+      type: github
+      name: ShehabEl-DeenAlalkamy/apigee-core-yaml-pipeline-templates
+      ref: main
+      endpoint: ShehabEl-DeenAlalkamy
+  pipelines:
+    - pipeline: abomis-airports-ci
+      source: abomis-airports-ci
+      trigger:
+        branches:
+          include:
+            - main
+
+pool:
+  vmImage: ubuntu-latest
+
+extends:
+  template: release.yaml@apigee-core
+  parameters:
+    releaseProfile: custom-release
+    deploymentProfile: mvn-plugins
+    artifactAlias: abomis-airports-ci
+    artifactName: proxy-bundle-artifacts
+    commonVariableGroups:
+      - abomis-airports-common
+    releaseList:
+      - stageName: Dev
+        displayName: Dev
+        variableGroup: abomis-airports-dev-env
+        environment: abomis-dev
+      - stageName: Test
+        displayName: Test
+        variableGroup: abomis-airports-tst-env
+        environment: abomis-tst
+      - stageName: Prod
+        displayName: Prod
+        variableGroup: abomis-airports-prd-env
+        environment: abomis-prd
