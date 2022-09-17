@@ -35,7 +35,7 @@ Within this repository you will find a reference solution for [API proxy][apigee
 
 - Supports Apigee X / Hybrid.
 - Follows best practices.
-- Decoupled CI/CD.
+- Fully Decoupled CI/CD.
 - High maintainabilty.
 - Cost effective as your pipeline will only trigger to changes in source code.
 - Highly flexible.
@@ -53,6 +53,7 @@ This solution is using:
 - Packaging and deployment of the API proxy bundle using [Apigee Deploy Maven Plugin][apigee-deploy-mvn] (in Maven via plugin).
 - Integration testing of the deployed proxy using [apickli][apigee-automation-apickli] + [CucumberJS][apigee-automation-cucumberjs] (standalone via node).
 - CI/CD solution using [Azure Pipelines][azure-pipelines].
+- [apigee-core-yaml-pipeline-templates][apigee-core-templates] framework.
 
 ### 2. Folder Structure and Naming Conventions
 
@@ -107,8 +108,7 @@ An API developer will have to allocate single repository per API proxy where he 
   │   └── resources/
   ├── cicd/
   │   ├── build.yaml
-  │   ├── release.yaml
-  │   └── templates/
+  │   └── release.yaml
   ├── docs/
   │   └── assets/
   ├── resources
@@ -230,26 +230,28 @@ git push -u origin2 feature/cicd-pipeline
   - [release pipeline][release-pipeline-file]:
     - The following are the supported params:
   
-      ```yaml
-      parameters:
-        releaseProfile: {{ release_profile }} # which Azure DevOps environments to deploy to, currently 'custom-release' is the only supported value
-        deploymentProfile: {{ deployment_profile }} # how to deploy your API proxy, currently 'mvn-plugins' is the only supported value
-        artifactAlias: {{ build_pipeline_resource_identifier }} # can be specified in resources.pipelines[0].pipeline
-        artifactName: {{ proxy_bundle_artifact_name }} # by default it is named 'proxy-bundle-artifacts' in your build pipeline
-        commonVariableGroups:
-          - {{ <REPO_NAME>-common }} # your common variables, for example 'abomis-airports-common'
-        releaseList: # required for 'custom-release' release profile, specify list of your deployment environments
-          - stageName: {{ stage_name }} # identifier for you stage, for example 'Dev'
-            displayName: {{ display_name }} # display name shown in your release pipeline run, for example 'Dev'
-            variableGroup: {{ <REPO_NAME>-<ENVIRONMENT>-env }} # your environment specific variables, for example 'abomis-airports-dev-env'
-            environment: {{ azure_devops_environment }} # your deployment environment, for example 'abomis-dev'
-          ...
-        apigeeConfigList: # required if deploymentConfig.customApigeeConfig is true, contains all the list of configurations you wish to create only regardless of source code
-          - {{ apigee_config_item }} # supported values are [references, keystores, aliases, targetservers, keyvaluemaps, resourcefiles, apiproducts, developers, reports, flowhooks]
-          ...
-        deploymentConfig: # (optional) alters the deployment templates framework behavior
-          customApigeeConfig: {{ true || false }} # enable/disable custom apigee configuration creation, default is false and will attempt to create all the supported configs
-      ```
+    ```yaml
+    parameters:
+      releaseProfile: {{ release_profile }} # which Azure DevOps environments to deploy to, currently 'custom-release' is the only supported value
+      deploymentProfile: {{ deployment_profile }} # how to deploy your API proxy, currently 'mvn-plugins' is the only supported value
+      artifactAlias: {{ build_pipeline_resource_identifier }} # can be specified in resources.pipelines[0].pipeline
+      artifactName: {{ proxy_bundle_artifact_name }} # by default it is named 'proxy-bundle-artifacts' in your build pipeline
+      commonVariableGroups:
+        - {{ <REPO_NAME>-common }} # your common variables, for example 'abomis-airports-common'
+      releaseList: # required for 'custom-release' release profile, specify list of your deployment environments
+        - stageName: {{ stage_name }} # identifier for you stage, for example 'Dev'
+          displayName: {{ display_name }} # display name shown in your release pipeline run, for example 'Dev'
+          variableGroup: {{ <REPO_NAME>-<ENVIRONMENT>-env }} # your environment specific variables, for example 'abomis-airports-dev-env'
+          environment: {{ azure_devops_environment }} # your deployment environment, for example 'abomis-dev'
+        ...
+      apigeeConfigList: # required if deploymentConfig.customApigeeConfig is true, contains all the list of configurations you wish to create only regardless of source code
+        - {{ apigee_config_item }} # supported values are [references, keystores, aliases, targetservers, keyvaluemaps, resourcefiles, apiproducts, developers, reports, flowhooks]
+        ...
+      deploymentConfig: # (optional) alters the deployment templates framework behavior
+        customApigeeConfig: {{ true || false }} # enable/disable custom apigee configuration creation, default is false and will attempt to create all the supported configs
+    ```
+
+    > :bulb: **Tip:** see [apigee-core-yaml-pipeline-templates][apigee-core-templates] framework.
 
 - Configure:
 
@@ -267,18 +269,24 @@ git push -u origin2 feature/cicd-pipeline
 
 </div>
 
+<div align="center">
+
+![Pipeline 02][ado-pipeline-02]
+
+</div>
+
 - By default, your build pipeline was built to follow best practices by consuming all of the tests results to have a unified UI to see the tests results. It was also built to generate a coverage report to help you determine the proportion of your project's code that is actually being tested by your unit tests. click on the **"Tests"** tab:
 
 <div align="center">
 
-![Reports 01][ado-pipeline-02]
+![Reports 01][ado-pipeline-03]
 *Tests Results (Static Code Analysis + Unit Tests)*
 
 </div>
 
 <div align="center">
 
-![Reports 02][ado-pipeline-03]
+![Reports 02][ado-pipeline-04]
 *Code Coverage Report*
 
 </div>
@@ -289,7 +297,7 @@ git push -u origin2 feature/cicd-pipeline
 
 <div align="center">
 
-![Artifacts][ado-pipeline-04]
+![Artifacts][ado-pipeline-05]
 *Pipeline Artifacts*
 
 </div>
@@ -334,23 +342,11 @@ git push -u origin2 feature/cicd-pipeline
 
 </div>
 
-<div align="center">
-
-![Proxies 02][apigee-proxies-02]
-
-</div>
-
 - Check your Apigee organization's developers:
 
 <div align="center">
 
 ![Developers 01][apigee-config-developers-01]
-
-</div>
-
-<div align="center">
-
-![Developers 02][apigee-config-developers-02]
 
 </div>
 
@@ -407,6 +403,7 @@ Shehab El-Deen Alalkamy
 [apigee-automation-apickli]: https://github.com/apickli/apickli
 [apigee-automation-cucumberjs]: https://github.com/cucumber/cucumber-js
 [azure-pipelines]: https://azure.microsoft.com/en-us/services/devops/pipelines/
+[apigee-core-templates]: https://github.com/ShehabEl-DeenAlalkamy/apigee-core-yaml-pipeline-templates
 [apigee-config-mvn-folder-structure]: https://github.com/apigee/apigee-config-maven-plugin/tree/hybrid#multi-file-config
 [apigee-docs-understanding-apis-and-proxies]: https://cloud.google.com/apigee/docs/api-platform/fundamentals/understanding-apis-and-api-proxies
 [apigee-docs-roles-list]: https://cloud.google.com/iam/docs/understanding-roles#apigee-roles
@@ -419,18 +416,17 @@ Shehab El-Deen Alalkamy
 [apigee-api-management-cicd]: docs/assets/imgs/apigee-api-management-cicd-.png
 [apigee-diagram]: docs/assets/imgs/apigee-diagram.png
 [apigee-proxy-model-v1]: docs/assets/imgs/apigee-proxy-model-v1.png
-[ado-pipeline-01]: docs/assets/imgs/ado-pipeline-run.png
-[ado-pipeline-02]: docs/assets/imgs/ado-pipeline-tests.png
-[ado-pipeline-03]: docs/assets/imgs/ado-pipeline-coverage-report.png
-[ado-pipeline-04]: docs/assets/imgs/ado-pipeline-artifacts.png
+[ado-pipeline-01]: docs/assets/imgs/ado-pipeline-ui-run.png
+[ado-pipeline-02]: docs/assets/imgs/ado-pipeline-run.png
+[ado-pipeline-03]: docs/assets/imgs/ado-pipeline-tests.png
+[ado-pipeline-04]: docs/assets/imgs/ado-pipeline-coverage-report.png
+[ado-pipeline-05]: docs/assets/imgs/ado-pipeline-artifacts.png
 [ado-pipeline-release-01]: docs/assets/imgs/ado-pipeline-release-01.png
 [ado-pipeline-release-02]: docs/assets/imgs/ado-pipeline-release-02.png
 [ado-pipeline-release-03]: docs/assets/imgs/ado-pipeline-release-run.png
 [ado-pipeline-release-04]: docs/assets/imgs/ado-pipeline-release-tests.png
 [apigee-proxies-01]: docs/assets/imgs/apigee-proxies-01.png
-[apigee-proxies-02]: docs/assets/imgs/apigee-proxies-02.png
 [apigee-config-developers-01]: docs/assets/imgs/apigee-config-developers-01.png
-[apigee-config-developers-02]: docs/assets/imgs/apigee-config-developers-02.png
 [apigee-proxies-live-dev]: docs/assets/imgs/apigee-proxies-live-dev.png
 [apigee-proxies-live-test]: docs/assets/imgs/apigee-proxies-live-test.png
 [apigee-proxies-live-prod]: docs/assets/imgs/apigee-proxies-live-prod.png
