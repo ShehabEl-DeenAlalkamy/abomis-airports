@@ -24,5 +24,6 @@ pool:
 extends:
   template: build-01.yaml@apigee-core
   parameters:
+    buildProfile: mvn-plugins
     variableGroups:
       - abomis-airports-common
