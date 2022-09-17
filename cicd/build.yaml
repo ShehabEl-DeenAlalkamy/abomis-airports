@@ -16,7 +16,7 @@ resources:
       type: github
       name: ShehabEl-DeenAlalkamy/apigee-core-yaml-pipeline-templates
       ref: feat/api-proxy-framework
-      # endpoint: ShehabEl-DeenAlalkamy
+      endpoint: ShehabEl-DeenAlalkamy
 
 pool:
   vmImage: ubuntu-latest
