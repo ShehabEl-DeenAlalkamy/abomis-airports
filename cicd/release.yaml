@@ -21,7 +21,7 @@ pool:
   vmImage: ubuntu-latest
 
 extends:
-  template: release-01.yaml@apigee-core
+  template: release.yaml@apigee-core
   parameters:
     releaseProfile: custom-release
     deploymentProfile: mvn-plugins

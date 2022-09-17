@@ -22,7 +22,7 @@ pool:
   vmImage: ubuntu-latest
 
 extends:
-  template: build-01.yaml@apigee-core
+  template: build.yaml@apigee-core
   parameters:
     buildProfile: mvn-plugins
     variableGroups:
