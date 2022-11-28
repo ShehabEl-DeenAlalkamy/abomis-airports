@@ -225,7 +225,18 @@ git push -u origin2 feature/cicd-pipeline
       > :warning: **Warning:** Make sure to properly configure your DNS to route your `hostname` to your Apigee organization.
 
 - Update:
-  - [build pipeline][build-pipeline-file] `variableGroups` param with your created `<REPO_NAME>-common` variable group.
+  - [build pipeline][build-pipeline-file]:
+    - The following are the supported params:
+  
+      ```yaml
+      parameters:
+        buildProfile: # how to build your API proxy, each buildProfile has a type, a name and a version
+          type: {{ build_profile_type }} # 'api-proxies' value is the only supported value
+          name: {{ build_profile_name }} # add 'mvn-plugins'. 'oas2apigee' & 'mvn-plugins' are supported
+          version: {{ build_profile_version }} # add '1'. '1' is the only supported value
+        variableGroups:
+          - {{ <REPO_NAME>-common }} # your common variables, for example 'abomis-airports-common'
+      ```  
   
   - [release pipeline][release-pipeline-file]:
     - The following are the supported params:
@@ -233,7 +244,10 @@ git push -u origin2 feature/cicd-pipeline
     ```yaml
     parameters:
       releaseProfile: {{ release_profile }} # which Azure DevOps environments to deploy to, currently 'custom-release' is the only supported value
-      deploymentProfile: {{ deployment_profile }} # how to deploy your API proxy, currently 'mvn-plugins' is the only supported value
+      deploymentProfile: # how to deploy your API proxy, each deploymentProfile has a type, a name and a version
+          type: {{ deployment_profile_type }} # 'api-proxies' value is the only supported value
+          name: {{ deployment_profile_name }} # add 'mvn-plugins'. 'oas2apigee' & 'mvn-plugins' are supported
+          version: {{ deployment_profile_version }} # add '1'. '1' is the only supported value      
       artifactAlias: {{ build_pipeline_resource_identifier }} # can be specified in resources.pipelines[0].pipeline
       artifactName: {{ proxy_bundle_artifact_name }} # by default it is named 'proxy-bundle-artifacts' in your build pipeline
       commonVariableGroups:
@@ -241,7 +255,8 @@ git push -u origin2 feature/cicd-pipeline
       releaseList: # required for 'custom-release' release profile, specify list of your deployment environments
         - stageName: {{ stage_name }} # identifier for you stage, for example 'Dev'
           displayName: {{ display_name }} # display name shown in your release pipeline run, for example 'Dev'
-          variableGroup: {{ <REPO_NAME>-<ENVIRONMENT>-env }} # your environment specific variables, for example 'abomis-airports-dev-env'
+          variableGroups: # your environment specific variables, for example 'abomis-airports-dev-env'
+            - {{ <REPO_NAME>-<ENVIRONMENT>-env }}
           environment: {{ azure_devops_environment }} # your deployment environment, for example 'abomis-dev'
         ...
       apigeeConfigList: # required if deploymentConfig.customApigeeConfig is true, contains all the list of configurations you wish to create only regardless of source code
