@@ -14,6 +14,7 @@ pr:
       - main
       - master
       - rel/**
+      - release/**
   paths:
     exclude:
       - "docs/**"
@@ -27,7 +28,7 @@ resources:
     - repository: apigee-core
       type: github
       name: ShehabEl-DeenAlalkamy/apigee-core-yaml-pipeline-templates
-      ref: main
+      ref: refs/tags/v2.0.0-beta
       endpoint: ShehabEl-DeenAlalkamy
 
 pool:
@@ -36,6 +37,9 @@ pool:
 extends:
   template: build.yaml@apigee-core
   parameters:
-    buildProfile: mvn-plugins
+    buildProfile:
+      type: api-proxies
+      name: mvn-plugins
+      version: 1
     variableGroups:
       - abomis-airports-common
